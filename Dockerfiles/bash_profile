@@ -1,0 +1,8 @@
+cd $HOME
+source .bashrc
+cd $HOME/parabolic-lrbms-2017-code/arch-full
+source PATH.sh
+cd $HOME/parabolic-lrbms-2017-code
+mkdir -p scripts
+cd scripts
+

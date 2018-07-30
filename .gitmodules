@@ -1,0 +1,82 @@
+[submodule "dune-common"]
+	path = dune-common
+	url = https://github.com/dune-community/dune-common.git
+        ignore = dirty
+[submodule "dune-grid"]
+	path = dune-grid
+	url = https://github.com/dune-community/dune-grid.git
+        ignore = dirty
+[submodule "dune-geometry"]
+	path = dune-geometry
+	url = https://github.com/dune-mirrors/dune-geometry.git
+        ignore = dirty
+[submodule "dune-fem"]
+	path = dune-fem
+	url = https://github.com/dune-mirrors/dune-fem.git
+        ignore = dirty
+[submodule "local/bin"]
+	path = local/bin
+	url = https://github.com/dune-community/local-bin.git
+        ignore = untracked
+[submodule "dune-gdt"]
+	path = dune-gdt
+	url = https://github.com/dune-community/dune-gdt.git
+[submodule "dune-istl"]
+	path = dune-istl
+	url = https://github.com/dune-mirrors/dune-istl.git
+        ignore = dirty
+[submodule "configs"]
+	path = config.opts
+	url = https://github.com/dune-community/config.opts.git
+[submodule "dune-python"]
+	path = dune-python
+	url = https://github.com/dune-mirrors/dune-python.git
+        ignore = dirty
+[submodule "dune-testtools"]
+	path = dune-testtools
+	url = https://github.com/dune-mirrors/dune-testtools.git
+        ignore = dirty
+[submodule "dune-xt-common"]
+	path = dune-xt-common
+	url = https://github.com/dune-community/dune-xt-common.git
+[submodule "dune-xt-la"]
+	path = dune-xt-la
+	url = https://github.com/dune-community/dune-xt-la.git
+[submodule "dune-xt-grid"]
+	path = dune-xt-grid
+	url = https://github.com/dune-community/dune-xt-grid.git
+[submodule "dune-xt-functions"]
+	path = dune-xt-functions
+	url = https://github.com/dune-community/dune-xt-functions.git
+[submodule "dune-pybindxi"]
+	path = dune-pybindxi
+	url = https://github.com/dune-community/dune-pybindxi.git
+[submodule "dune-alugrid"]
+	path = dune-alugrid
+	url = https://github.com/dune-mirrors/dune-alugrid.git
+        ignore = dirty
+[submodule "pymor"]
+	path = pymor
+	url = git@zivgitlab.uni-muenster.de:srave_01/pymor.git
+[submodule "dune-localfunctions"]
+	path = dune-localfunctions
+	url = https://github.com/dune-community/dune-localfunctions.git
+        ignore = dirty
+[submodule "dune-pdelab"]
+	path = dune-pdelab
+	url = https://github.com/dune-mirrors/dune-pdelab.git
+        ignore = dirty
+[submodule "dune-typetree"]
+	path = dune-typetree
+	url = https://github.com/dune-mirrors/dune-typetree.git
+        ignore = dirty
+[submodule "dune-functions"]
+	path = dune-functions
+	url = https://github.com/dune-mirrors/dune-functions.git
+        ignore = dirty
+[submodule "pylrbms"]
+	path = pylrbms
+	url = https://github.com/dune-community/pylrbms
+[submodule "dune-visibility-demo"]
+	path = dune-visibility-demo
+	url = https://github.com/renemilk/dune-visibility-demo.git

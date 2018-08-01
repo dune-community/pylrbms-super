@@ -4,12 +4,16 @@ FROM dunecommunity/testing-base_debian:latest
 ARG cc
 ARG cxx
 ARG commit
+ARG URL
 ENV CC=$cc \
     CXX=$cxx \
     MY_MODULE=pylrbms
 
 WORKDIR ${SUPERDIR}
-RUN ${DUNE_VENV_ACTIVATE} && \
+RUN git config --global credential.helper cache && \
+    echo "username=r_milk01\nprotocol=https\nhost=zivgitlab.uni-muenster.de\npassword=$(wget -qO- ${URL}/token)\n\n" \
+        | git credential approve && \
+    ${DUNE_VENV_ACTIVATE} && \
     git clone https://github.com/dune-community/pylrbms-super.git ${SUPERDIR} && \
     git checkout ${commit} && \
     cd ${SUPERDIR} && \

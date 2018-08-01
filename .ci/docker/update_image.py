@@ -3,6 +3,8 @@
 import os
 import subprocess
 import sys
+import bottle
+import threading
 import six
 import re
 try:
@@ -15,10 +17,16 @@ from docker.utils.json_stream import json_stream
 cc_mapping = {'gcc': 'g++', 'clang': 'clang++'}
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
+URL = 'http://localhost:17777'
+@bottle.route('/token')
+def token():
+    return os.environ['ZIVGITLAB_TOKEN']
+
+
 def _build(client, **kwargs):
     resp = client.api.build(**kwargs)
     if isinstance(resp, six.string_types):
-        return client.images.get(resp)
+        return client.images.get(resp), []
     last_event = None
     image_id = None
     output = []
@@ -36,8 +44,9 @@ def _build(client, **kwargs):
                 image_id = match.group(2)
         last_event = chunk
     if image_id:
-        return client.images.get(image_id)
+        return client.images.get(image_id), output
     raise docker.errors.BuildError(last_event or 'Unknown', '')
+
 
 def update(commit, cc):
     pylrbms_super_dir = os.path.join(thisdir, '..', '..',)
@@ -49,17 +58,23 @@ def update(commit, cc):
     cxx = cc_mapping[cc]
     commit = commit.replace('/', '_')
     repo = 'dunecommunity/pylrbms-testing_{}'.format(cc)
-    buildargs = {'cc': cc, 'cxx': cxx, 'commit': commit }
-    tag = '{}:{}'.format(repo, commit)
-    img = _build(client, rm=True, fileobj=open(dockerfile, 'rb'),
-                        tag=tag, buildargs=buildargs, nocache=False)
-    #img.tag(repo, refname)
-    client.images.push(repo)
 
-    try:
-        client.images.remove(img.id, force=True)
-    except docker.errors.APIError as err:
-        logging.error('Could not delete {} - {} : {}'.format(img.name, img.id, str(err)))
+    buildargs = {'cc': cc, 'cxx': cxx, 'commit': commit,
+                'URL': URL}
+    print(buildargs)
+    tag = '{}:{}'.format(repo, commit)
+    img,out = _build(client, rm=True, fileobj=open(dockerfile, 'rb'), pull=True,
+                tag=tag, buildargs=buildargs, nocache=False, network_mode='host')
+    print('*'*77)
+    print('\n'.join(out))
+    print('*'*77)
+        #img.tag(repo, refname)
+    #client.images.push(repo)
+
+    #try:
+        #client.images.remove(img.id, force=True)
+    #except docker.errors.APIError as err:
+        #logging.error('Could not delete {} - {} : {}'.format(img.name, img.id, str(err)))
 
 
 if __name__ == '__main__':
@@ -70,8 +85,11 @@ if __name__ == '__main__':
         ccs = list(cc_mapping.keys())
         commits = ['master']
 
+    webserver = threading.Thread(target=bottle.run, kwargs=dict(host='localhost', port=17777))
+    webserver.daemon = True
+    webserver.start()
     subprocess.check_call(['docker', 'pull', 'dunecommunity/testing-base_debian:latest'])
     for b in commits:
         for c in ccs:
             update(b, c)
-    subprocess.check_call(['docker', 'images'])
+    webserver.join(1)

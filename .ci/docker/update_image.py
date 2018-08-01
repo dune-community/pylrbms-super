@@ -63,20 +63,11 @@ def update(commit, cc):
 
     buildargs = {'cc': cc, 'cxx': cxx, 'commit': commit,
                 'URL': URL}
-    print(buildargs)
     tag = '{}:{}'.format(repo, commit)
     img,out = _build(client, rm=True, fileobj=open(dockerfile, 'rb'), pull=True,
                 tag=tag, buildargs=buildargs, nocache=False, network_mode='host')
-    print('*'*77)
-    print('\n'.join(out))
-    print('*'*77)
         #img.tag(repo, refname)
-    #client.images.push(repo)
-
-    #try:
-        #client.images.remove(img.id, force=True)
-    #except docker.errors.APIError as err:
-        #logging.error('Could not delete {} - {} : {}'.format(img.name, img.id, str(err)))
+    client.images.push(repo)
 
 
 if __name__ == '__main__':

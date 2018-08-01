@@ -18,6 +18,8 @@ cc_mapping = {'gcc': 'g++', 'clang': 'clang++'}
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
 URL = 'http://localhost:17777'
+
+
 @bottle.route('/token')
 def token():
     return os.environ['ZIVGITLAB_TOKEN']

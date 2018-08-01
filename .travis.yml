@@ -22,12 +22,14 @@ install:
 
 script:
   - cd ${TRAVIS_BUILD_DIR}
+  - git config --global credential.helper cache
+  - echo "username=r_milk01\nprotocol=https\nhost=zivgitlab.uni-muenster.de\npassword=${ZIVGITLAB_TOKEN}\n\n" | git credential approve
   - git submodule update --init --recursive
   - git submodule status
   - ./bin/check_environments.py
   - |
     if [[ "${TRAVIS_PULL_REQUEST}" == "false" ]] ; then
-        docker login --username=$DOCKER_HUB_USERNAME --password=$DOCKER_HUB_PASSWORD
+        echo ${DOCKER_HUB_PASSWORD} | docker login --username="${DOCKER_HUB_USERNAME}" --password-stdin
         ./scripts/bash/travis_wait_new.bash 42 ./.ci/docker/update_image.py ${COMPILER} ${TRAVIS_BRANCH}
     fi
 

@@ -83,3 +83,6 @@
 [submodule "scripts"]
 	path = scripts
 	url = https://github.com/wwu-numerik/scripts.git
+[submodule "dune-grid-glue"]
+	path = dune-grid-glue
+	url = https://github.com/dune-mirrors/dune-grid-glue.git

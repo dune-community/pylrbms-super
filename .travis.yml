@@ -23,7 +23,8 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - git config --global credential.helper cache
   - echo "username=r_milk01\nprotocol=https\nhost=zivgitlab.uni-muenster.de\npassword=${ZIVGITLAB_TOKEN}\n\n" | git credential approve
-  - git submodule update --init --recursive
+  - git config --global url."https://r_milk01:${ZIVGITLAB_TOKEN}@zivgitlab.uni-muenster.de/".insteadOf https://zivgitlab.uni-muenster.de/
+  - git submodule update --init --recursive 
   - git submodule status
   - ./bin/check_environments.py
   - |

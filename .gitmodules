@@ -80,3 +80,6 @@
 [submodule "dune-visibility-demo"]
 	path = dune-visibility-demo
 	url = https://github.com/renemilk/dune-visibility-demo.git
+[submodule "scripts"]
+	path = scripts
+	url = https://github.com/wwu-numerik/scripts.git

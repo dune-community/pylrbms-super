@@ -34,7 +34,7 @@
         ignore = dirty
 [submodule "dune-testtools"]
 	path = dune-testtools
-	url = https://github.com/dune-mirrors/dune-testtools.git
+	url = https://github.com/dune-community/dune-testtools.git
         ignore = dirty
 [submodule "dune-xt-common"]
 	path = dune-xt-common

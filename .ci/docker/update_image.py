@@ -47,10 +47,10 @@ def _build(client, **kwargs):
         last_event = chunk
     if image_id:
         return client.images.get(image_id), output
-    raise docker.errors.BuildError(last_event or 'Unknown', '')
+    raise docker.errors.BuildError(last_event or 'Unknown', '\n'.join(output))
 
 
-def update(commit, cc):
+def update(commit, refname, cc):
     pylrbms_super_dir = os.path.join(thisdir, '..', '..',)
     dockerfile = os.path.join(thisdir, 'pylrbms-testing', 'Dockerfile')
     client = docker.from_env(version='auto')
@@ -58,7 +58,6 @@ def update(commit, cc):
     os.chdir(pylrbms_super_dir)
 
     cxx = cc_mapping[cc]
-    commit = commit.replace('/', '_')
     repo = 'dunecommunity/pylrbms-testing_{}'.format(cc)
 
     buildargs = {'cc': cc, 'cxx': cxx, 'commit': commit,
@@ -66,23 +65,26 @@ def update(commit, cc):
     tag = '{}:{}'.format(repo, commit)
     img,out = _build(client, rm=True, fileobj=open(dockerfile, 'rb'), pull=True,
                 tag=tag, buildargs=buildargs, nocache=False, network_mode='host')
-        #img.tag(repo, refname)
-    client.images.push(repo)
+    img.tag(repo, refname)
+    img.tag(repo, commit)
+    client.images.push(repo, tag=refname)
+    client.images.push(repo, tag=commit)
 
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
         ccs = [sys.argv[1]]
-        commits = [sys.argv[2]]
     else:
         ccs = list(cc_mapping.keys())
-        commits = ['master']
+
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], universal_newlines=True).strip()
+    commit = os.environ.get('CI_COMMIT_SHA', head)
+    refname = os.environ.get('CI_COMMIT_REF_NAME', 'master').replace('/', '_')
 
     webserver = threading.Thread(target=bottle.run, kwargs=dict(host='localhost', port=17777))
     webserver.daemon = True
     webserver.start()
     subprocess.check_call(['docker', 'pull', 'dunecommunity/testing-base_debian:latest'])
-    for b in commits:
-        for c in ccs:
-            update(b, c)
+    for c in ccs:
+        update(commit, refname, c)
     webserver.join(1)

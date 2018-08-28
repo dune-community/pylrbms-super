@@ -10,10 +10,9 @@ ENV CC=$cc \
     MY_MODULE=pylrbms
 
 WORKDIR ${SUPERDIR}
-RUN git config --global credential.helper cache && \
-    echo "username=r_milk01\nprotocol=https\nhost=zivgitlab.uni-muenster.de\npassword=$(wget -qO- ${URL}/token)\n\n" \
-        | git credential approve && \
-    ${DUNE_VENV_ACTIVATE} && \
+
+RUN /bin/bash -c 'set -ue && export ZIVGITLAB_TOKEN="$(wget -qO- ${URL}/token)" && \
+    git config --global url."https://r_milk01:${ZIVGITLAB_TOKEN}@zivgitlab.uni-muenster.de/".insteadOf https://zivgitlab.uni-muenster.de/ && \
     git clone https://github.com/dune-community/pylrbms-super.git ${SUPERDIR} && \
     git checkout ${commit} && \
     cd ${SUPERDIR} && \
@@ -24,7 +23,7 @@ RUN git config --global credential.helper cache && \
     ${SRC_DCTRL} ${BLD} all && \
     ${SRC_DCTRL} ${BLD} --only=${MY_MODULE} bexec ${BUILD_CMD} dependent_bindings && \
     rm -rf ${MY_MODULE} && \
-    mkdir ${MY_MODULE}
+    mkdir ${MY_MODULE}'
 
 # THE END
 ENV DEBIAN_FRONTEND teletype

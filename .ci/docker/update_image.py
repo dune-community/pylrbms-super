@@ -17,8 +17,6 @@ from docker.utils.json_stream import json_stream
 cc_mapping = {'gcc': 'g++', 'clang': 'clang++'}
 thisdir = os.path.dirname(os.path.abspath(__file__))
 
-URL = 'http://localhost:17777'
-
 
 @bottle.route('/token')
 def token():
@@ -50,7 +48,7 @@ def _build(client, **kwargs):
     raise docker.errors.BuildError(last_event or 'Unknown', '\n'.join(output))
 
 
-def update(commit, refname, cc):
+def update(commit, refname, cc, url):
     pylrbms_super_dir = os.path.join(thisdir, '..', '..',)
     dockerfile = os.path.join(thisdir, 'pylrbms-testing', 'Dockerfile')
     client = docker.from_env(version='auto')
@@ -61,7 +59,7 @@ def update(commit, refname, cc):
     repo = 'dunecommunity/pylrbms-testing_{}'.format(cc)
 
     buildargs = {'cc': cc, 'cxx': cxx, 'commit': commit,
-                'URL': URL}
+                'URL': url}
     tag = '{}:{}'.format(repo, commit)
     img,out = _build(client, rm=True, fileobj=open(dockerfile, 'rb'), pull=True,
                 tag=tag, buildargs=buildargs, nocache=False, network_mode='host')
@@ -77,18 +75,28 @@ if __name__ == '__main__':
     else:
         ccs = list(cc_mapping.keys())
 
+    host = sys.argv[2]
+    port = 17777
+    url = 'http://{}:{}'.format(host, port)
+
+    if 'ZIVGITLAB_TOKEN' not in os.environ:
+        os.environ['ZIVGITLAB_TOKEN'] = sys.argv[3]
+    if os.environ['ZIVGITLAB_TOKEN'] == '':
+        raise Exception('empty token')
+
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], universal_newlines=True).strip()
     commit = os.environ.get('CI_COMMIT_SHA', head)
     refname = os.environ.get('CI_COMMIT_REF_NAME', 'master').replace('/', '_')
 
-    webserver = threading.Thread(target=bottle.run, kwargs=dict(host='localhost', port=17777))
+    webserver = threading.Thread(target=bottle.run, kwargs=dict(host=host, port=port))
     webserver.daemon = True
     webserver.start()
     subprocess.check_call(['docker', 'pull', 'dunecommunity/testing-base_debian:latest'])
     for c in ccs:
         try:
-            update(commit, refname, c)
+            update(commit, refname, c, url)
         except docker.errors.BuildError as be:
             print(be.msg)
-            break
+            webserver.join(1)
+            sys.exit(-1)
     webserver.join(1)

@@ -19,7 +19,15 @@ pipeline:
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    secrets: [ zivgitlab_token, docker_user, docker_pw, fake_secret ]
+    secrets: [ zivgitlab_token, docker_user, docker_pw ]
+
+  notify:
+    image: drillster/drone-email
+    host: mail.milk.pm
+    from: drone@pymor.org
+    when:
+      status: [ changed, failure ]
+    secrets:  [ email_username, email_password ]
 
 matrix:
   CC:

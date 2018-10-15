@@ -7,15 +7,10 @@ pipeline:
   build:
     image: dunecommunity/gitlabci_dockerindocker-dockerindocker
     commands:
-      - git config --global credential.helper cache
-      - echo "username=r_milk01\nprotocol=https\nhost=zivgitlab.uni-muenster.de\npassword=$ZIVGITLAB_TOKEN\n\n" | git credential approve
-      - git config --global url."https://r_milk01:$ZIVGITLAB_TOKEN@zivgitlab.uni-muenster.de/".insteadOf https://zivgitlab.uni-muenster.de/
-      - git submodule update --init --recursive
-      - git submodule status
-      - ./bin/check_environments.py
+      - BHOST=$(hostname -i | awk '{ print $1 }')
       - echo $DOCKER_PW | docker login --username="$DOCKER_USER" --password-stdin
       - pip3 install -U bottle docker
-      - .ci/docker/update_image.py $CC $(hostname -i) $ZIVGITLAB_TOKEN
+      - .ci/docker/update_image.py "$CC" "$BHOST" "$ZIVGITLAB_TOKEN"
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -33,3 +28,6 @@ matrix:
   CC:
     - gcc
     - clang
+
+ports:
+ - "17777"

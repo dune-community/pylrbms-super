@@ -5,6 +5,7 @@ import subprocess
 import sys
 import bottle
 import threading
+import logging
 import six
 import re
 try:
@@ -70,12 +71,13 @@ def update(commit, refname, cc, url):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         ccs = [sys.argv[1]]
+        host = sys.argv[2]
     else:
         ccs = list(cc_mapping.keys())
+        host = subprocess.check_output(['hostname', '-i'], universal_newlines=True).strip()
 
-    host = sys.argv[2]
     port = 17777
     url = 'http://{}:{}'.format(host, port)
 
@@ -85,12 +87,14 @@ if __name__ == '__main__':
         raise Exception('empty token')
 
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], universal_newlines=True).strip()
-    commit = os.environ.get('CI_COMMIT_SHA', head)
-    refname = os.environ.get('CI_COMMIT_REF_NAME', 'master').replace('/', '_')
+    commit = os.environ.get('DRONE_COMMIT_SHA', head)
+    refname = os.environ.get('DRONE_COMMIT_BRANCH', 'master').replace('/', '_')
 
     webserver = threading.Thread(target=bottle.run, kwargs=dict(host=host, port=port))
     webserver.daemon = True
     webserver.start()
+    logger = logging.getLogger('docker-update')
+    logger.error('updating images for {}({}) - {}'.format(refname, commit, ', '.join(ccs)))
     subprocess.check_call(['docker', 'pull', 'dunecommunity/testing-base_debian:latest'])
     for c in ccs:
         try:

@@ -28,6 +28,3 @@ matrix:
   CC:
     - gcc
     - clang
-
-ports:
- - "17777"

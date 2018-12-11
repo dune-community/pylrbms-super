@@ -92,3 +92,6 @@
 [submodule "dune-xt-data"]
 	path = dune-xt-data
 	url = https://github.com/dune-community/dune-xt-data
+[submodule "pymumps"]
+	path = pymumps
+	url = https://github.com/PyMumps/pymumps

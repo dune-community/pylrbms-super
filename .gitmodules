@@ -10,10 +10,6 @@
 	path = dune-geometry
 	url = https://github.com/dune-mirrors/dune-geometry.git
         ignore = dirty
-[submodule "dune-fem"]
-	path = dune-fem
-	url = https://github.com/dune-mirrors/dune-fem.git
-        ignore = dirty
 [submodule "local/bin"]
 	path = bin
 	url = https://github.com/dune-community/local-bin.git
@@ -62,24 +58,9 @@
 	path = dune-localfunctions
 	url = https://github.com/dune-community/dune-localfunctions.git
         ignore = dirty
-[submodule "dune-pdelab"]
-	path = dune-pdelab
-	url = https://github.com/dune-mirrors/dune-pdelab.git
-        ignore = dirty
-[submodule "dune-typetree"]
-	path = dune-typetree
-	url = https://github.com/dune-mirrors/dune-typetree.git
-        ignore = dirty
-[submodule "dune-functions"]
-	path = dune-functions
-	url = https://github.com/dune-mirrors/dune-functions.git
-        ignore = dirty
 [submodule "pylrbms"]
 	path = pylrbms
 	url = https://github.com/dune-community/pylrbms
-[submodule "dune-visibility-demo"]
-	path = dune-visibility-demo
-	url = https://github.com/renemilk/dune-visibility-demo.git
 [submodule "scripts"]
 	path = scripts
 	url = https://github.com/wwu-numerik/scripts.git
